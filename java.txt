@@ -1,0 +1,59 @@
+class Person {
+  private String name;
+  private int age;
+	public Person(String na , int a) {
+    name=na;
+    age=a;
+  }
+	public String getName() {
+    return name;
+  }
+	public int getAge() {
+    return age;
+  }
+  
+  public void yo() {
+    name = "asdasdasdasd";
+  }
+  
+	Person[] array = new Person[30];
+	Person[] array1 = new Person[30];   
+	int j = 0;
+
+  for (int i=0; i<30;i++ ) {
+    if(array[i].getAge()>20) {    
+  	   array1[j++]=array[i]; 
+    }
+  }
+  
+  List<Person> persons = new ArrayList(30);
+  List<Person> persons2 = new ArrayList();
+  
+  // java.util.collection
+  // List, Set, Stack, Queue, Map,
+  for (Person p : persons) {
+    if (p.getAge() > 20) {
+      persons2.add(p);
+    }
+  }
+  
+  
+  //Stream API
+  persons.stream()
+    .filter(p -> p.getAge() > 20)
+    .collect(Collectors.toList());
+
+
+}
+
+class Car {
+  private final Person owner;
+  //constructor
+  
+  public Person getOwner() {
+    return owner;
+  }
+}
+
+Car car = new Car(new Person("matt", 20));
+car.getOwner().yo();
