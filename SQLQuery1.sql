@@ -135,7 +135,7 @@ from pracownicy as p join dzialy as d
 on p.dzialid=d.dzialid
 join zarobki on zarobki.pracid=p.pracid
 
---funkcja agreguj¹ca 
+--funkcja agregujÂ¹ca 
 
 select * from pracownicy
 select count(*) from pracownicy --wszystkie pola
@@ -195,8 +195,8 @@ select imie,nazwisko from pracownicy where pracid in
 
 --COINSTRAINT
 
-/* Do tabeli dodaj kolumnê filia, która ma zawieraæ do 20 znaków i na³ó¿ na ni¹ ograniczenie pozwalaj¹ce wpisywaæ 
-jedynie miasta Kraków, Warszawa, ³ódŸ oraz Katowice. Nazwij to ograniczenie CK_MIASTO*/
+/* Do tabeli dodaj kolumnÃª filia, ktÃ³ra ma zawieraÃ¦ do 20 znakÃ³w i naÂ³Ã³Â¿ na niÂ¹ ograniczenie pozwalajÂ¹ce wpisywaÃ¦ 
+jedynie miasta KrakÃ³w, Warszawa, Â³Ã³dÅ¸ oraz Katowice. Nazwij to ograniczenie CK_MIASTO*/
 
 alter table pracownicy add filia
 varchar(20);
@@ -209,18 +209,18 @@ insert into pracownicy(filia) values('Lodz')
 
 select * from pracownicy
 
-/*Stwórz kolumnê zadanie)1 w tabeli pracownicy, która ma zawieraæ 10 znaków i na³ó¿ na ni¹ ograniczenia pozwalaj¹ce wpisywaæ 
-jedynie wyrazy które maj¹ od 2 do 6 lub od  do 10 znaków. Nazwij to ograniczenie CK_ZADANIE1*/
+/*StwÃ³rz kolumnÃª zadanie)1 w tabeli pracownicy, ktÃ³ra ma zawieraÃ¦ 10 znakÃ³w i naÂ³Ã³Â¿ na niÂ¹ ograniczenia pozwalajÂ¹ce wpisywaÃ¦ 
+jedynie wyrazy ktÃ³re majÂ¹ od 2 do 6 lub od  do 10 znakÃ³w. Nazwij to ograniczenie CK_ZADANIE1*/
 
 alter table pracownicy add zadanie_1 varchar(10) constraint CK_ZADANIE1 CHECK ((len(zadanie_1) between 2 and 6) 
 OR (len(zadanie_1) between 8 and 10))
 
 insert into pracownicy(zadanie_1) values('jasio12')
 
-/* Do tabeli pracownic dodaj kolumne mix ktora ma zawieraæ 6 znaków i 
-na³ó¿ na ni¹ ogarniczenie pozwalaj¹ce wpisywaæ jedynie wyrazy wyrazy 
-które zawieraj¹ na przemian 3 litery i 3 cyfry. Nazwij to CK_MIX
-przyk³ad wartoœci a4f5d9*/
+/* Do tabeli pracownic dodaj kolumne mix ktora ma zawieraÃ¦ 6 znakÃ³w i 
+naÂ³Ã³Â¿ na niÂ¹ ogarniczenie pozwalajÂ¹ce wpisywaÃ¦ jedynie wyrazy wyrazy 
+ktÃ³re zawierajÂ¹ na przemian 3 litery i 3 cyfry. Nazwij to CK_MIX
+przykÂ³ad wartoÅ“ci a4f5d9*/
 
 alter table pracownicy add mix varchar(6) constraint CK_MIX CHECK ( mix like '[a-z][0-9][a-z][0-9][a-z][0-9]')
 insert into pracownicy(mix) values('aa23zx')
@@ -236,7 +236,7 @@ values('123-456-78');
 --north_cz_10
 -- zapytanie zwracajace 2 kolumny:
 --nazwa produktu oraz
---cene jedynie produkty drozsze do 25
+--cene jedynie produkty drozsze oo 25
 
 select * from Produkty;
 
@@ -245,7 +245,7 @@ from Produkty
 where CenaJednostkowa > 25;
 
 
--- zapytanie zwracaj¹ce 2 kolumny:
+-- zapytanie zwracajÂ¹ce 2 kolumny:
 --nazwe produktu
 -- oraz nazwe kategorii do
 -- ktorej produkt nalezy
@@ -263,23 +263,23 @@ on p.IDkategorii=k.IDkategorii;
 -- drugiego kwartalu 1997 roku
 
 
-select * from [Opisy zamówieñ];
-select * from Zamówienia;
+select * from [Opisy zamÃ³wieÃ±];
+select * from ZamÃ³wienia;
 
 
-select Imiê, Nazwisko, Sum
-(CenaJednostkowa*iloœæ) as
-'wartosc' from Zamówienia as z join
-[opisy zamówieñ] as op
-on z.IDzamówienia=op.IDzamówienia
+select ImiÃª, Nazwisko, Sum
+(CenaJednostkowa*iloÅ“Ã¦) as
+'wartosc' from ZamÃ³wienia as z join
+[opisy zamÃ³wieÃ±] as op
+on z.IDzamÃ³wienia=op.IDzamÃ³wienia
 join Pracownicy as p
 on p.IDpracownika=z.IDpracownika
-where DataZamówienia>='1997-04-01'
-and DataZamówienia <= '1997-06-30'
-group by Imiê, Nazwisko, p.IDpracownika,
-z.IDzamówienia;
+where DataZamÃ³wienia>='1997-04-01'
+and DataZamÃ³wienia <= '1997-06-30'
+group by ImiÃª, Nazwisko, p.IDpracownika,
+z.IDzamÃ³wienia;
 
--- zapytanie zwracaj¹ce 3 kolumny:
+-- zapytanie zwracajÂ¹ce 3 kolumny:
 -- nazwe kategorii oraz
 -- nazwe produktu oraz cene
 -- jedynie najdrozsze
@@ -299,23 +299,23 @@ on t1.IDkategorii=t2.IDkategorii
 where CenaJednostkowa = maks;
 
 
--- zapytanie zwracaj¹ce 2 kolumny:
+-- zapytanie zwracajÂ¹ce 2 kolumny:
 -- kraj oraz ilosc
 -- zamowienia z niego realizowane
 -- jedynie kraje o
 -- najwieszej liczbie zamowien
 
-select Kraj, count(IDzamówienia)
+select Kraj, count(IDzamÃ³wienia)
 as 'ilosc'
-from zamówienia as z
+from zamÃ³wienia as z
 join Klienci as k
 on z.IDklienta=k.IDklienta
 group by kraj
-having count (IDzamówienia) = 
+having count (IDzamÃ³wienia) = 
 (select max(ilosc) as 'maks' from
-(select Kraj, count(IDzamówienia)
+(select Kraj, count(IDzamÃ³wienia)
 as 'ilosc'
-from zamówienia as z
+from zamÃ³wienia as z
 join Klienci as k
 on z.IDKlienta=k.IDKlienta
 group by Kraj) as t1);
@@ -324,13 +324,13 @@ group by Kraj) as t1);
 --north_eng_cz_10
 
 /*znajdz najtanszy i najdrozszy produkt 
-dostarczony przez dostace którego nazwa zaczyna sie na litere a-g i c-p
+dostarczony przez dostace ktÃ³rego nazwa zaczyna sie na litere a-g i c-p
 podaj z jakiej kategorii  on pocodzi oraz w dodatkowej kolumnie 
 czy jest to najdrozszy produkt z nazwy kategorii L O L W T F */
 
 SELECT RIGHT('jasio kotek',3) -- z prawej 
 SELECT LEFT('jasio kotek',3) -- z lewej 
-SELECT CHARINDEX(' ','jasio kotek') -- gdzie znajduje siê spacja 
+SELECT CHARINDEX(' ','jasio kotek') -- gdzie znajduje siÃª spacja 
 SELECT SUBSTRING('jasio kotek',4,5)--od ktorego miejsca i ile
 
 select LEFT('jasio kotek',CHARINDEX(' ','jasio kotek')-1) -- spacja - 1 miejsce
@@ -363,8 +363,8 @@ From Products p Join Suppliers s
 On s.SupplierId=p.SupplierId)
 
 
-/*Zapytanie zwaracj¹e tytu³, imiê i nazwisko najm³odszej osoby w ka¿dym z dzia³ów;
-przez zdia³ rozumiemy tytu³ pracownika(4)*/
+/*Zapytanie zwaracjÂ¹e tytuÂ³, imiÃª i nazwisko najmÂ³odszej osoby w kaÂ¿dym z dziaÂ³Ã³w;
+przez zdiaÂ³ rozumiemy tytuÂ³ pracownika(4)*/
 
 SELECT e.Title, FIrstName,LastName FROM Employees as e JOIN
 (SELECT title, MIN(BirthDate) as najmlodszy FROM Employees GROUP BY title) as jasio 
@@ -374,8 +374,8 @@ Where e.BirthDate=jasio.najmlodszy
 
 --north_cz_10
 
-/*Zapytanie zwaracj¹ce 2 kolumny: nazwe kategorii oraz nazwe firmy
-Jedynie firmy ktore dostarczaja najwiecej produktów w danej kategorii */
+/*Zapytanie zwaracjÂ¹ce 2 kolumny: nazwe kategorii oraz nazwe firmy
+Jedynie firmy ktore dostarczaja najwiecej produktÃ³w w danej kategorii */
 
 
 SELECT NazwaFirmy, NazwaKategorii FROM 
@@ -398,9 +398,9 @@ On t2.IDkategorii=t3.IDkategorii
 WHERE ile=maks
 
 
-/*Zapytanie zwracaj¹ce 3 kolumny : nazwê firmy, nazwê kategorii 
-oraz iloœæ produktów 
-dostarczanych w danej kategorii przez dostawcê 
+/*Zapytanie zwracajÂ¹ce 3 kolumny : nazwÃª firmy, nazwÃª kategorii 
+oraz iloÅ“Ã¦ produktÃ³w 
+dostarczanych w danej kategorii przez dostawcÃª 
 Jedynie dostawy z Niemiec(7)*/
 
 SELECT NazwaFirmy, NazwaKategorii, COUNT(idproduktu) as 'ile' FROM 
@@ -411,32 +411,32 @@ ON d.IDdostawcy=p.IdDostawcy
 where Kraj='Niemcy'
 GROUP BY NazwaFirmy,NazwaKategorii,d.IDdostawcy,k.IDkateg
 
-/*Zapytanie zwaracj¹ce 3 kolumny:
-Imiê,Nazwisko,iloœæ zamówieñ zrealizowanych po terminie. 
-Jedynie osoba z najwiksz¹ iloœci¹ zamówieñ po terminie(1)*/
+/*Zapytanie zwaracjÂ¹ce 3 kolumny:
+ImiÃª,Nazwisko,iloÅ“Ã¦ zamÃ³wieÃ± zrealizowanych po terminie. 
+Jedynie osoba z najwikszÂ¹ iloÅ“ciÂ¹ zamÃ³wieÃ± po terminie(1)*/
 
-SELECT Imiê, nazwisko, count(IDzamówienia) as ilosc FROM Pracownicy as p join zamówienia as z 
+SELECT ImiÃª, nazwisko, count(IDzamÃ³wienia) as ilosc FROM Pracownicy as p join zamÃ³wienia as z 
 on p.idpracownika=z.idpracownika 
-where DataWysy³ki>DataWymagana
-group by imiê, Nazwisko having count(idzamówienia) = (select max(ilosc) 
-from (Select Imiê, nazwisko, count(IDzamówienia) as ilosc FROM Pracownicy as p join zamówienia as z 
-on p.idpracownika=z.idpracownika where DataWysy³ki > DataWymagana 
-group by imiê,nazwisko) as t1)
+where DataWysyÂ³ki>DataWymagana
+group by imiÃª, Nazwisko having count(idzamÃ³wienia) = (select max(ilosc) 
+from (Select ImiÃª, nazwisko, count(IDzamÃ³wienia) as ilosc FROM Pracownicy as p join zamÃ³wienia as z 
+on p.idpracownika=z.idpracownika where DataWysyÂ³ki > DataWymagana 
+group by imiÃª,nazwisko) as t1)
 --MOZLIWOSC FILTROWANIA WIELU WARTOSCI NARAZ L O L O L O L O L O L O L O L O L O L O L O L O L O L O L O L O L O L 
 
 
-select * from zamówienia
+select * from zamÃ³wienia
 
 
-/*Podzaj nazwê najtañszego ze wszystkich produktów(>0) 
-stosuj¹c podzapytanie*/
+/*Podzaj nazwÃª najtaÃ±szego ze wszystkich produktÃ³w(>0) 
+stosujÂ¹c podzapytanie*/
 
 select distinct od.productid, p.productname, od.unitprice
 from [order details] od join products p 
 on p.productid = od.productid 
 where od.unitprice in (select min(unitprice) from [order details]);
 
-/*zapytanie zwaracaj¹ce nazwê firmy, która z³o¿y³a najdro¿sze zamówienie(QUICK-Stop) */
+/*zapytanie zwaracajÂ¹ce nazwÃª firmy, ktÃ³ra zÂ³oÂ¿yÂ³a najdroÂ¿sze zamÃ³wienie(QUICK-Stop) */
 
 SELECT CompanyName FROM 
 "Order Details" as orde JOIN Orders as od
@@ -445,8 +445,8 @@ Group by od.orderID, CompanyName
 HAVING sum(quantity*unitprice) = (select Max(sums) FROM (SELECT sum(quantity*Unitprice) as sums FROM "Order Details"
 Group by OrderID) as t)
 
-/*Zapytanie zwracaj¹ce nazwê kategorii 
-zawieraj¹cej najwiêcej produktów(Confections)*/
+/*Zapytanie zwracajÂ¹ce nazwÃª kategorii 
+zawierajÂ¹cej najwiÃªcej produktÃ³w(Confections)*/
 
 
 select CategoryName from Categories as c
@@ -455,13 +455,13 @@ Group by CategoryName
 having count(ProductID) = (select max(ile) from(select count(ProductID) as ile
 from products group by categoryID) as t)
 
---wy³uskiwanie czasu z systemu 
+--wyÂ³uskiwanie czasu z systemu 
 select convert(VARCHAR(2), DATEPART(HH,GETDATE())) + ':' +
 CONVERT(VARCHAR(2), DATEPART(N,GETDATE())) + ':' +
 CONVERT(VARCHAR(2), DATEPART(S,GETDATE())) AS [czas]
 --funkcje czasowe 
 SELECT SYSDATETIME(), --systemowy 
-       SYSDATETIMEOFFSET(), --dodaje strefe czasow¹
+       SYSDATETIMEOFFSET(), --dodaje strefe czasowÂ¹
 	   GETDATE(),
 	   GETUTCDATE()
 	   
@@ -471,7 +471,7 @@ SELECT DATEADD(dd,-DAY(GETDATE()-1), GETDATE() ) as FirstDayCurrMonth, --pierwsz
 --obliczanie wieku 
 SELECT FirstName,LastName,BirthDate, 
 DATEDIFF(yy,BirthDate,GETDATE()) as Age From dbo.Employees
---wybieranie danego kawa³ka daty lol wtf
+--wybieranie danego kawaÂ³ka daty lol wtf
 SELECT DATEPART(yy,GETDATE()) as CurrentYear,
 DATEPART(mm,GETDATE()) as CurrentMonth,
 DATEPART(dd,GETDATE()) as CurrentDay,
@@ -481,7 +481,7 @@ SELECT DATENAME(dw,GETDATE()) as DzienTygodnia,
 	DATENAME(mm,GETDATE()) as Miesiac
 
 
-/*szukanie produktów o nazwie zaczynaj¹cej siê na dowoln¹ literê, a druga litera to zaczyna siê 
+/*szukanie produktÃ³w o nazwie zaczynajÂ¹cej siÃª na dowolnÂ¹ literÃª, a druga litera to zaczyna siÃª 
 od c do p i litera nie jest g oraz cena produktu zawiera sie w przedziael 10-100
 bez wartosci 90(33)*/
 
@@ -496,11 +496,30 @@ SUBSTRING(productname,3,1)<>'g'
 and
 UnitPrice between '10' and '100' and UnitPrice <>'90'
 
-/*zapytanie zwracaj¹ce 3 loumny: imiê, nazwisko id zamówienia. 
-jedynie zamówienia 3 kwarta³u 96
+/*zapytanie zwracajÂ¹ce 3 loumny: imiÃª, nazwisko id zamÃ³wienia. 
+jedynie zamÃ³wienia 3 kwartaÂ³u 96
 zrealizowanie po terminie(5)*/
 
-SELECT p.imiê, p.nazwisko, z.idzamówienia from pracownicy p join zamówienia as z 
+SELECT p.imiÃª, p.nazwisko, z.idzamÃ³wienia from pracownicy p join zamÃ³wienia as z 
 on p.IDpracownika = z.idpracownika 
-where DATEPART(month,z.datazamówienia)>6 and datepart(month,z.datazamówienia)<10 and
-datepart(year,z.datazamówienia)=1996 and z.datawymagana-z.datawysy³ki<0
+where DATEPART(month,z.datazamÃ³wienia)>6 and datepart(month,z.datazamÃ³wienia)<10 and
+datepart(year,z.datazamÃ³wienia)=1996 and z.datawymagana-z.datawysyÂ³ki<0 
+
+
+
+
+
+
+
+
+
+
+
+alter table pracownicy add mix constraint sth check (mix like '[a-z][0-9][a-z][0-9][a-z][0-9]');
+
+
+
+
+
+
+
