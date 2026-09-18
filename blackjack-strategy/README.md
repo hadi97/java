@@ -98,22 +98,28 @@ java -cp out blackjack.Main --rounds=3000000 --out=output
 Options:
 
 ```
---rounds=N        total Monte Carlo samples across all cells (default 3000000)
---threads=N       worker threads (default = CPU core count)
---decks=N         number of decks (default 6)
---penetration=P   fraction of shoe dealt before reshuffle, 0-1 (default 0.75)
---out=DIR         output directory (default 'output')
---csv-only        skip HTML output
---html-only       skip CSV output
+--rounds=N          total Monte Carlo samples across all cells (default 3000000)
+--threads=N         worker threads (default = CPU core count)
+--decks=N           number of decks (default 6)
+--penetration=P     fraction of shoe dealt before reshuffle, 0-1 (default 0.75)
+--out=DIR           output directory (default 'output')
+--csv-only          skip HTML output
+--html-only         skip CSV output
+--skip-basic        don't generate basic_strategy.{html,csv}
+--skip-deviations   don't run the Monte Carlo simulation / generate deviations.{html,csv}
 ```
 
-Output:
+Output -- two independent pairs of files:
 
-- `output/deviation_chart.html` -- color-coded chart in the same section layout as a typical
-  expanded deviation chart (pair splitting, soft totals, hard totals, surrender, insurance), with
-  the baseline action per cell and any true-count thresholds where the optimal play changes.
-- `output/deviation_chart.csv` -- one row per cell with the baseline action/EV, every action's EV,
-  and the full list of thresholds, for further analysis.
+- `output/basic_strategy.html` / `.csv` -- the exact true-count-0 basic strategy (no threshold
+  data at all), in the same section layout as a typical strategy chart (pair splitting, soft
+  totals, hard totals, surrender, insurance). This is computed exactly (not simulated) and is
+  written almost instantly, regardless of `--rounds`.
+- `output/deviations.html` / `.csv` -- the true-count deviation thresholds from the Monte Carlo
+  run: the baseline (true-count-0) action per cell plus any true-count(s) where the optimal play
+  changes. This is the file that takes a while to compute and scales with `--rounds` (see the
+  table above). Use `--skip-deviations` if you only want the instant basic strategy chart, or
+  `--skip-basic` to skip re-generating it on a later run.
 
 ## Code layout
 

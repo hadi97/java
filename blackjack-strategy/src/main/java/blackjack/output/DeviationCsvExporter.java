@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 /** Raw per-cell data dump: baseline action/EVs and every deviation threshold found. */
-public final class CsvExporter {
-    private CsvExporter() {}
+public final class DeviationCsvExporter {
+    private DeviationCsvExporter() {}
 
     public static void write(List<DeviationResult> results, Path outFile) throws IOException {
         try (Writer w = Files.newBufferedWriter(outFile, StandardCharsets.UTF_8)) {

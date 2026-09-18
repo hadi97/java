@@ -16,9 +16,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Renders the computed strategy + deviation data as a single self-contained HTML page, laid out like the reference chart. */
-public final class HtmlChartRenderer {
-    private HtmlChartRenderer() {}
+/**
+ * Renders the true-count deviation data as a single self-contained HTML page, laid out like the
+ * reference chart. This shows the baseline (true-count-0) action per cell plus any true-count
+ * thresholds where the optimal play changes -- for the plain basic-strategy chart with no
+ * threshold data at all, see {@link BasicStrategyHtmlRenderer}.
+ */
+public final class DeviationHtmlRenderer {
+    private DeviationHtmlRenderer() {}
 
     private static final int[] UP_ORDER = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0}; // 2..9, T, A
 
@@ -34,10 +39,13 @@ public final class HtmlChartRenderer {
         }
 
         StringBuilder html = new StringBuilder();
-        html.append("<!DOCTYPE html><html><head><meta charset='utf-8'><title>Custom Deviation Chart</title>");
+        html.append("<!DOCTYPE html><html><head><meta charset='utf-8'><title>True-Count Deviations Chart</title>");
         html.append("<style>").append(CSS).append("</style></head><body>");
-        html.append("<h1>Custom Expanded Deviation Chart</h1>");
+        html.append("<h1>True-Count Deviations Chart</h1>");
         html.append("<div class='rules'>").append(rulesSummary(rules)).append("</div>");
+        html.append("<p class='note'>Baseline action shown per cell is the true-count-0 basic strategy play "
+                + "(see the separate basic-strategy chart for that on its own); red text is a true-count threshold "
+                + "where play should change.</p>");
 
         html.append(sectionHeader("Pair Splitting"));
         int[] pairRanks = {0, 9, 8, 7, 6, 5, 4, 3, 2, 1}; // A,T,9,8,7,6,5,4,3,2
@@ -196,6 +204,7 @@ public final class HtmlChartRenderer {
     private static final String CSS = "body{font-family:Arial,Helvetica,sans-serif;background:#1e1e28;color:#eee;padding:20px;}"
             + "h1{color:#2ecc71;} h2{color:#2ecc71;margin-top:30px;border-bottom:1px solid #444;padding-bottom:4px;}"
             + ".rules{font-size:13px;color:#aaa;margin-bottom:20px;}"
+            + ".note{font-size:13px;color:#ccc;margin-bottom:20px;}"
             + "table{border-collapse:collapse;margin-bottom:10px;}"
             + "th,td{border:1px solid #444;text-align:center;padding:4px 8px;font-size:13px;min-width:38px;}"
             + "th{background:#333;color:#fff;}"
