@@ -19,6 +19,18 @@ public final class DeviationAnalyzer {
 
     public static final long MIN_SAMPLES_PER_BUCKET = 30;
 
+    /**
+     * Neighboring true-count buckets are pooled (summed) within this radius before computing an
+     * argmax, and a candidate action must win PERSISTENCE consecutive pooled buckets in a row
+     * before it's accepted as a real threshold. Both exist purely to reject single-bucket sampling
+     * noise on close decisions: without them, a near-tie action pair (e.g. hit vs double on a
+     * marginal hand) can flip back and forth bucket-to-bucket from pure variance, producing a
+     * nonsensical oscillating threshold list instead of the single monotonic crossover a real
+     * deviation should have.
+     */
+    private static final int POOL_RADIUS = 1; // pool bucket +/- this many neighbors (step=0.5, so radius 1 = a 1.0 true-count-wide window)
+    private static final int PERSISTENCE = 2; // consecutive pooled buckets that must agree before accepting a flip
+
     private DeviationAnalyzer() {}
 
     public static Set<Action> legalActions(Cell cell) {
@@ -41,33 +53,74 @@ public final class DeviationAnalyzer {
         int zero = TrueCountBucketing.zeroBucket();
         List<Threshold> thresholds = new ArrayList<>();
 
-        Action last = baseline.best;
-        for (int b = zero + 1; b < TrueCountBucketing.BUCKETS; b++) {
-            if (counts[b] < MIN_SAMPLES_PER_BUCKET) continue;
-            Action argmax = argmax(sums[b], counts[b], legal);
-            if (argmax != null && argmax != last) {
-                thresholds.add(new Threshold(argmax, true, TrueCountBucketing.trueCountOf(b)));
-                last = argmax;
-            }
-        }
-        last = baseline.best;
-        for (int b = zero - 1; b >= 0; b--) {
-            if (counts[b] < MIN_SAMPLES_PER_BUCKET) continue;
-            Action argmax = argmax(sums[b], counts[b], legal);
-            if (argmax != null && argmax != last) {
-                thresholds.add(new Threshold(argmax, false, TrueCountBucketing.trueCountOf(b)));
-                last = argmax;
-            }
-        }
+        scan(sums, counts, legal, baseline.best, zero + 1, TrueCountBucketing.BUCKETS, 1, true, thresholds);
+        scan(sums, counts, legal, baseline.best, zero - 1, -1, -1, false, thresholds);
+
         return new DeviationResult(cell, baseline, thresholds, total);
     }
 
-    private static Action argmax(double[] sumsForBucket, long count, Set<Action> legal) {
+    private static void scan(double[][] sums, long[] counts, Set<Action> legal, Action baselineAction,
+                              int start, int end, int step, boolean positiveDirection, List<Threshold> thresholds) {
+        Action last = baselineAction;
+        Action candidate = null;
+        int candidateRunStart = -1;
+        int consecutive = 0;
+
+        for (int b = start; b != end; b += step) {
+            PooledStats p = pool(sums, counts, b);
+            if (p.count < MIN_SAMPLES_PER_BUCKET) {
+                candidate = null;
+                consecutive = 0;
+                continue;
+            }
+            Action argmax = argmax(p.sum, p.count, legal);
+            if (argmax == null || argmax == last) {
+                candidate = null;
+                consecutive = 0;
+                continue;
+            }
+            if (argmax == candidate) {
+                consecutive++;
+            } else {
+                candidate = argmax;
+                candidateRunStart = b;
+                consecutive = 1;
+            }
+            if (consecutive >= PERSISTENCE) {
+                thresholds.add(new Threshold(argmax, positiveDirection, TrueCountBucketing.trueCountOf(candidateRunStart)));
+                last = argmax;
+                candidate = null;
+                consecutive = 0;
+            }
+        }
+    }
+
+    private static final class PooledStats {
+        final double[] sum;
+        final long count;
+        PooledStats(double[] sum, long count) {
+            this.sum = sum;
+            this.count = count;
+        }
+    }
+
+    private static PooledStats pool(double[][] sums, long[] counts, int center) {
+        double[] sum = new double[Action.values().length];
+        long count = 0;
+        int lo = Math.max(0, center - POOL_RADIUS);
+        int hi = Math.min(TrueCountBucketing.BUCKETS - 1, center + POOL_RADIUS);
+        for (int b = lo; b <= hi; b++) {
+            count += counts[b];
+            for (int a = 0; a < sum.length; a++) sum[a] += sums[b][a];
+        }
+        return new PooledStats(sum, count);
+    }
+
+    private static Action argmax(double[] pooledSum, long pooledCount, Set<Action> legal) {
         Action best = null;
         double bestV = Double.NEGATIVE_INFINITY;
         for (Action a : legal) {
-            double avg = sumsForBucket[a.ordinal()] / count;
-            if (a == Action.SURRENDER) avg = -0.5; // constant, not sampled per-bucket
+            double avg = (a == Action.SURRENDER) ? -0.5 : pooledSum[a.ordinal()] / pooledCount;
             if (avg > bestV) {
                 bestV = avg;
                 best = a;
