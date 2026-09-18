@@ -125,18 +125,36 @@ public final class DeviationHtmlRenderer {
         Action best = r.baseline.best;
         String cls = "act-" + best.name();
         StringBuilder sb = new StringBuilder("<td class='").append(cls).append("'>");
-        sb.append("<div class='action'>").append(best.shortCode).append("</div>");
-        if (!r.thresholds.isEmpty()) {
-            sb.append("<div class='thresh'>");
-            boolean first = true;
-            for (Threshold t : r.thresholds) {
-                if (!first) sb.append("<br>");
-                first = false;
-                sb.append(t.action.shortCode).append(' ').append(t.label());
-            }
-            sb.append("</div>");
+        if (r.thresholds.isEmpty()) {
+            sb.append("<div class='action'>").append(best.shortCode).append("</div>");
+        } else {
+            sb.append(thresholdMarkup(r.thresholds));
         }
         sb.append("</td>");
+        return sb.toString();
+    }
+
+    /**
+     * A deviation cell shows the true-count number(s) large and bold, in place of the action
+     * letter -- matching the reference chart's convention that the reader infers the alternate
+     * action from context (a pair cell's only alternate is split, a hard/soft total's is
+     * stand/hit/double, etc.). A small action tag is only added when a single cell has more than
+     * one threshold pointing at genuinely different actions (rare compound cases), since then the
+     * number alone would be ambiguous.
+     */
+    private static String thresholdMarkup(List<Threshold> thresholds) {
+        boolean singleAction = thresholds.stream().map(t -> t.action).distinct().count() == 1;
+        StringBuilder sb = new StringBuilder("<div class='numbers'>");
+        boolean first = true;
+        for (Threshold t : thresholds) {
+            if (!first) sb.append("<span class='sep'>/</span>");
+            first = false;
+            if (!singleAction) {
+                sb.append("<span class='tag'>").append(t.action.shortCode).append("</span>");
+            }
+            sb.append("<span class='num'>").append(t.label()).append("</span>");
+        }
+        sb.append("</div>");
         return sb.toString();
     }
 
@@ -168,16 +186,11 @@ public final class DeviationHtmlRenderer {
         CellResult b = insurance.baseline;
         StringBuilder sb = new StringBuilder("<table><tbody><tr><td class='rowlabel'>Insurance / Even Money</td>");
         String cls = "act-" + b.best.name();
-        sb.append("<td class='").append(cls).append("'><div class='action'>").append(b.best.shortCode).append("</div>");
-        if (!insurance.thresholds.isEmpty()) {
-            sb.append("<div class='thresh'>");
-            boolean first = true;
-            for (Threshold t : insurance.thresholds) {
-                if (!first) sb.append("<br>");
-                first = false;
-                sb.append(t.action.shortCode).append(' ').append(t.label());
-            }
-            sb.append("</div>");
+        sb.append("<td class='").append(cls).append("'>");
+        if (insurance.thresholds.isEmpty()) {
+            sb.append("<div class='action'>").append(b.best.shortCode).append("</div>");
+        } else {
+            sb.append(thresholdMarkup(insurance.thresholds));
         }
         sb.append("</td></tr></tbody></table>");
         return sb.toString();
@@ -191,9 +204,13 @@ public final class DeviationHtmlRenderer {
                 + "<span class='act-SPLIT'>Y</span> Split &nbsp; "
                 + "<span class='act-SURRENDER'>SUR</span> Surrender (else next-best) &nbsp; "
                 + "<span class='act-TAKE_INSURANCE'>INS</span> Take insurance / even money"
-                + "<p>Red text under an action is a true-count threshold where the play changes from the baseline "
-                + "(e.g. \"S 3+\" = stand instead at true count 3 and above; \"D 2-\" = double instead at true count 2 and below). "
-                + "Multiple lines mean the optimal play changes more than once moving away from true count 0.</p>"
+                + "<p>A cell showing a bold red number instead of a letter has a deviation: the background color is "
+                + "still the baseline (true-count-0) play, and the number is the true-count where you switch away "
+                + "from it (\"3+\" = at true count 3 and above; \"2-\" = at true count 2 and below). The alternate "
+                + "action is normally obvious from the cell (e.g. a pair's only alternate is split); a small letter "
+                + "tag is added before a number only on the rare cell where two different thresholds point at two "
+                + "different actions. \"3+/6+\" means the play changes once at true count 3, then changes again at "
+                + "true count 6.</p>"
                 + "</div>";
     }
 
@@ -206,11 +223,13 @@ public final class DeviationHtmlRenderer {
             + ".rules{font-size:13px;color:#aaa;margin-bottom:20px;}"
             + ".note{font-size:13px;color:#ccc;margin-bottom:20px;}"
             + "table{border-collapse:collapse;margin-bottom:10px;}"
-            + "th,td{border:1px solid #444;text-align:center;padding:4px 8px;font-size:13px;min-width:38px;}"
+            + "th,td{border:1px solid #444;text-align:center;padding:4px 6px;font-size:13px;min-width:46px;}"
             + "th{background:#333;color:#fff;}"
             + ".rowlabel{background:#333;font-weight:bold;text-align:left;}"
             + ".action{font-weight:bold;font-size:15px;color:#111;}"
-            + ".thresh{font-size:10px;color:#c0392b;font-weight:bold;margin-top:2px;}"
+            + ".numbers{font-weight:800;font-size:19px;color:#a3271f;line-height:1.15;white-space:nowrap;}"
+            + ".numbers .sep{font-size:13px;color:#555;margin:0 2px;font-weight:normal;}"
+            + ".numbers .tag{font-size:10px;color:#a3271f;vertical-align:super;margin-right:1px;}"
             + ".act-STAND{background:#f4d03f;} .act-HIT{background:#fdfefe;} .act-DOUBLE{background:#58d68d;}"
             + ".act-SPLIT{background:#48c9b0;} .act-SURRENDER{background:#af7ac5;}"
             + ".act-TAKE_INSURANCE{background:#58d68d;} .act-DECLINE_INSURANCE{background:#fdfefe;}"
